@@ -2,18 +2,94 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Icon from '@/components/ui/icon';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
+interface ConfigOptions {
+  cabinetColor: string;
+  countertop: string;
+  handles: string;
+  size: string;
+}
 
 const Index = () => {
   const [activeSection, setActiveSection] = useState('home');
+  const [config, setConfig] = useState<ConfigOptions>({
+    cabinetColor: 'black-gloss',
+    countertop: 'white-marble',
+    handles: 'none',
+    size: 'medium',
+  });
 
   const navigation = [
     { id: 'home', label: 'Главная' },
+    { id: 'configurator', label: 'Конфигуратор' },
+    { id: 'materials', label: 'Материалы и текстуры' },
     { id: 'portfolio', label: 'Портфолио' },
     { id: 'services', label: 'Услуги' },
     { id: 'process', label: 'Процесс работы' },
     { id: 'about', label: 'Обо мне' },
     { id: 'reviews', label: 'Отзывы' },
     { id: 'contacts', label: 'Контакты' },
+  ];
+
+  const cabinetColors = [
+    { id: 'black-gloss', name: 'Черный глянец', color: '#000000', finish: 'Глянцевый' },
+    { id: 'white-matte', name: 'Белый матовый', color: '#FFFFFF', finish: 'Матовый' },
+    { id: 'black-matte', name: 'Черный матовый', color: '#1a1a1a', finish: 'Матовый' },
+    { id: 'gray-concrete', name: 'Серый бетон', color: '#8E9196', finish: 'Текстурный' },
+    { id: 'white-wood', name: 'Белое дерево', color: '#f5f5f5', finish: 'Текстурный' },
+    { id: 'dark-wood', name: 'Темное дерево', color: '#3d3d3d', finish: 'Текстурный' },
+  ];
+
+  const countertops = [
+    { id: 'white-marble', name: 'Белый мрамор', pattern: 'Мраморный', color: '#f8f8f8' },
+    { id: 'black-granite', name: 'Черный гранит', pattern: 'Гранитный', color: '#2d2d2d' },
+    { id: 'gray-quartz', name: 'Серый кварц', pattern: 'Однотонный', color: '#9e9e9e' },
+    { id: 'white-quartz', name: 'Белый кварц', pattern: 'Однотонный', color: '#ffffff' },
+    { id: 'concrete', name: 'Бетон', pattern: 'Текстурный', color: '#7a7a7a' },
+  ];
+
+  const handles = [
+    { id: 'none', name: 'Без ручек', type: 'Интегрированные' },
+    { id: 'black-rail', name: 'Черная рейлинг', type: 'Современные' },
+    { id: 'minimal-bar', name: 'Минималистичные планки', type: 'Современные' },
+    { id: 'hidden', name: 'Скрытые', type: 'Встроенные' },
+  ];
+
+  const sizes = [
+    { id: 'small', name: 'Компактная', size: '6-10 м²', modules: '4-6 модулей' },
+    { id: 'medium', name: 'Средняя', size: '10-15 м²', modules: '7-10 модулей' },
+    { id: 'large', name: 'Большая', size: '15-20 м²', modules: '11-15 модулей' },
+    { id: 'xlarge', name: 'С островом', size: '20+ м²', modules: '16+ модулей' },
+  ];
+
+  const materials = [
+    {
+      category: 'Фасады',
+      items: [
+        { name: 'МДФ с эмалью', description: 'Глянцевая или матовая поверхность', durability: 'Высокая' },
+        { name: 'Пластик HPL', description: 'Устойчив к влаге и царапинам', durability: 'Очень высокая' },
+        { name: 'Шпон', description: 'Натуральная древесина', durability: 'Средняя' },
+        { name: 'Акрил', description: 'Глубокий глянец, легкий уход', durability: 'Высокая' },
+      ],
+    },
+    {
+      category: 'Столешницы',
+      items: [
+        { name: 'Кварцевый агломерат', description: 'Прочность и эстетика', durability: 'Очень высокая' },
+        { name: 'Гранит', description: 'Натуральный камень премиум', durability: 'Высокая' },
+        { name: 'Керамогранит', description: 'Устойчивость к температурам', durability: 'Очень высокая' },
+        { name: 'Искусственный камень', description: 'Бесшовные поверхности', durability: 'Высокая' },
+      ],
+    },
+    {
+      category: 'Фурнитура',
+      items: [
+        { name: 'Blum', description: 'Австрийское качество', durability: 'Премиум' },
+        { name: 'Hettich', description: 'Немецкая надежность', durability: 'Премиум' },
+        { name: 'GTV', description: 'Оптимальное решение', durability: 'Высокая' },
+      ],
+    },
   ];
 
   const portfolioProjects = [
@@ -100,13 +176,22 @@ const Index = () => {
     }
   };
 
+  const updateConfig = (key: keyof ConfigOptions, value: string) => {
+    setConfig((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const selectedCabinet = cabinetColors.find((c) => c.id === config.cabinetColor);
+  const selectedCountertop = countertops.find((c) => c.id === config.countertop);
+  const selectedHandle = handles.find((h) => h.id === config.handles);
+  const selectedSize = sizes.find((s) => s.id === config.size);
+
   return (
     <div className="min-h-screen bg-white">
       <nav className="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="text-xl font-semibold tracking-tight">KITCHEN DESIGN</div>
-            <div className="hidden md:flex space-x-8">
+            <div className="hidden lg:flex space-x-6">
               {navigation.map((item) => (
                 <button
                   key={item.id}
@@ -122,7 +207,7 @@ const Index = () => {
             <Button
               variant="outline"
               size="sm"
-              className="md:hidden"
+              className="lg:hidden"
               onClick={() => scrollToSection('contacts')}
             >
               Контакты
@@ -142,11 +227,11 @@ const Index = () => {
               </h1>
               <p className="text-lg text-gray-600 max-w-lg">
                 Создаю функциональные и элегантные пространства в стиле минимализм. 
-                От проекта до установки.
+                Настройте свою кухню в конфигураторе.
               </p>
               <div className="flex gap-4">
-                <Button size="lg" onClick={() => scrollToSection('contacts')} className="bg-black text-white hover:bg-gray-800">
-                  Заказать проект
+                <Button size="lg" onClick={() => scrollToSection('configurator')} className="bg-black text-white hover:bg-gray-800">
+                  Конфигуратор
                 </Button>
                 <Button size="lg" variant="outline" onClick={() => scrollToSection('portfolio')}>
                   Портфолио
@@ -159,6 +244,227 @@ const Index = () => {
                 alt="Современная кухня"
                 className="w-full h-full object-cover"
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="configurator" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-light mb-4">Конфигуратор кухни</h2>
+            <p className="text-gray-600">Создайте свою идеальную кухню онлайн</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <div className="space-y-8">
+              <Card className="p-8 border-0 shadow-sm">
+                <h3 className="text-xl font-medium mb-6">Цвет фасадов</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {cabinetColors.map((color) => (
+                    <button
+                      key={color.id}
+                      onClick={() => updateConfig('cabinetColor', color.id)}
+                      className={`p-4 border-2 transition-all hover:scale-105 ${
+                        config.cabinetColor === color.id ? 'border-black' : 'border-gray-200'
+                      }`}
+                    >
+                      <div
+                        className="w-full h-16 mb-3"
+                        style={{ backgroundColor: color.color, border: color.color === '#FFFFFF' ? '1px solid #e5e5e5' : 'none' }}
+                      ></div>
+                      <div className="text-sm font-medium">{color.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">{color.finish}</div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-8 border-0 shadow-sm">
+                <h3 className="text-xl font-medium mb-6">Столешница</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  {countertops.map((top) => (
+                    <button
+                      key={top.id}
+                      onClick={() => updateConfig('countertop', top.id)}
+                      className={`p-4 border-2 transition-all hover:scale-105 ${
+                        config.countertop === top.id ? 'border-black' : 'border-gray-200'
+                      }`}
+                    >
+                      <div
+                        className="w-full h-16 mb-3"
+                        style={{ backgroundColor: top.color, border: top.color === '#ffffff' ? '1px solid #e5e5e5' : 'none' }}
+                      ></div>
+                      <div className="text-sm font-medium">{top.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">{top.pattern}</div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-8 border-0 shadow-sm">
+                <h3 className="text-xl font-medium mb-6">Ручки</h3>
+                <div className="space-y-3">
+                  {handles.map((handle) => (
+                    <button
+                      key={handle.id}
+                      onClick={() => updateConfig('handles', handle.id)}
+                      className={`w-full p-4 border-2 transition-all text-left hover:scale-105 ${
+                        config.handles === handle.id ? 'border-black bg-gray-50' : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="text-sm font-medium">{handle.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">{handle.type}</div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
+              <Card className="p-8 border-0 shadow-sm">
+                <h3 className="text-xl font-medium mb-6">Размер кухни</h3>
+                <div className="space-y-3">
+                  {sizes.map((size) => (
+                    <button
+                      key={size.id}
+                      onClick={() => updateConfig('size', size.id)}
+                      className={`w-full p-4 border-2 transition-all text-left hover:scale-105 ${
+                        config.size === size.id ? 'border-black bg-gray-50' : 'border-gray-200'
+                      }`}
+                    >
+                      <div className="text-sm font-medium">{size.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {size.size} • {size.modules}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+            </div>
+
+            <div className="lg:sticky lg:top-24 h-fit">
+              <Card className="p-8 border-0 shadow-lg">
+                <h3 className="text-2xl font-medium mb-6">Ваша конфигурация</h3>
+                
+                <div className="space-y-6 mb-8">
+                  <div className="flex items-center justify-between py-4 border-b border-gray-200">
+                    <div>
+                      <div className="text-sm text-gray-500 mb-1">Фасады</div>
+                      <div className="font-medium">{selectedCabinet?.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">{selectedCabinet?.finish}</div>
+                    </div>
+                    <div
+                      className="w-16 h-16 border border-gray-200"
+                      style={{ backgroundColor: selectedCabinet?.color }}
+                    ></div>
+                  </div>
+
+                  <div className="flex items-center justify-between py-4 border-b border-gray-200">
+                    <div>
+                      <div className="text-sm text-gray-500 mb-1">Столешница</div>
+                      <div className="font-medium">{selectedCountertop?.name}</div>
+                      <div className="text-xs text-gray-500 mt-1">{selectedCountertop?.pattern}</div>
+                    </div>
+                    <div
+                      className="w-16 h-16 border border-gray-200"
+                      style={{ backgroundColor: selectedCountertop?.color }}
+                    ></div>
+                  </div>
+
+                  <div className="py-4 border-b border-gray-200">
+                    <div className="text-sm text-gray-500 mb-1">Ручки</div>
+                    <div className="font-medium">{selectedHandle?.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">{selectedHandle?.type}</div>
+                  </div>
+
+                  <div className="py-4 border-b border-gray-200">
+                    <div className="text-sm text-gray-500 mb-1">Размер</div>
+                    <div className="font-medium">{selectedSize?.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      {selectedSize?.size} • {selectedSize?.modules}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-6 mb-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-600">Примерная стоимость:</span>
+                    <span className="text-2xl font-light">от 350 000 ₽</span>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Точная стоимость рассчитывается после замера
+                  </p>
+                </div>
+
+                <Button 
+                  className="w-full bg-black text-white hover:bg-gray-800" 
+                  size="lg"
+                  onClick={() => scrollToSection('contacts')}
+                >
+                  Заказать расчет
+                </Button>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="materials" className="py-20 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-light mb-4">Материалы и текстуры</h2>
+            <p className="text-gray-600">Работаем только с премиальными материалами</p>
+          </div>
+
+          <Tabs defaultValue="facades" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-12 bg-gray-100 p-1">
+              <TabsTrigger value="facades" className="data-[state=active]:bg-white">Фасады</TabsTrigger>
+              <TabsTrigger value="countertops" className="data-[state=active]:bg-white">Столешницы</TabsTrigger>
+              <TabsTrigger value="hardware" className="data-[state=active]:bg-white">Фурнитура</TabsTrigger>
+            </TabsList>
+
+            {materials.map((category) => (
+              <TabsContent
+                key={category.category.toLowerCase()}
+                value={category.category === 'Фасады' ? 'facades' : category.category === 'Столешницы' ? 'countertops' : 'hardware'}
+                className="mt-0"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {category.items.map((item, idx) => (
+                    <Card key={idx} className="p-6 border-0 shadow-sm hover:shadow-lg transition-shadow">
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg font-medium mb-1">{item.name}</h3>
+                          <p className="text-sm text-gray-600">{item.description}</p>
+                        </div>
+                        <Icon name="CheckCircle2" size={20} className="text-black flex-shrink-0 ml-4" />
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        <Icon name="Award" size={14} />
+                        <span>Долговечность: {item.durability}</span>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              </TabsContent>
+            ))}
+          </Tabs>
+
+          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div className="text-3xl font-light mb-2">20+</div>
+              <div className="text-sm text-gray-600">Видов фасадов</div>
+            </div>
+            <div>
+              <div className="text-3xl font-light mb-2">15+</div>
+              <div className="text-sm text-gray-600">Типов столешниц</div>
+            </div>
+            <div>
+              <div className="text-3xl font-light mb-2">100%</div>
+              <div className="text-sm text-gray-600">Премиум качество</div>
+            </div>
+            <div>
+              <div className="text-3xl font-light mb-2">5 лет</div>
+              <div className="text-sm text-gray-600">Гарантия</div>
             </div>
           </div>
         </div>
